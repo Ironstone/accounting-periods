@@ -79,7 +79,7 @@ npm install
 ## 4. Test
 
 ```bash
-npm test            # run the 62 tests once
+npm test            # run the 74 tests once
 npm run test:watch  # re-run on change
 npm run test:ui     # the same tests in a browser view
 npm run typecheck   # strict TypeScript, no emit
@@ -105,7 +105,7 @@ npm run cli -- 2020-07-02 --json                                # the raw typed 
 npm run cli -- --help
 ```
 
-A bad request prints one `Error:` line per problem and exits with code 1.
+A bad request prints one `Error:` line per problem and exits with code 1. An unknown `--date-format` exits with code 2.
 
 ### 5.2 Web page
 

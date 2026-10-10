@@ -44,7 +44,7 @@ flowchart TD
   Q -->|Covered days not FY days| D[grouping.ts add coveredDays]
   Q -->|JSON or CSV output| E[render.ts new renderer]
   Q -->|End date instead of count| F[cli.ts takeWhile]
-  Q -->|Non-month FY end e.g. 5 April| G[Harder: period boundaries no longer month-aligned]
+  Q -->|FY starts mid-month e.g. 6 April| G[financialYearStart day: supported, tests L6 L7]
 ```
 
 | Pivot | Effort | Touches | Notes |
@@ -56,7 +56,7 @@ flowchart TD
 | Days covered instead of FY days | ✅ trivial | `grouping.ts` | add field, renderer picks |
 | JSON / CSV output | ✅ trivial | `render.ts` | groups are plain data |
 | Stop at an end date | ✅ trivial | consumer | `takeWhile(p => p.start <= end)` |
-| FY ends 5 April (UK) | ❌ larger | everything month-aligned | period = month no longer holds; discuss rather than build |
+| FY starts 6 April (UK) | ✅ supported | `financialYearStart: { month: 4, day: 6 }` | periods run 6th to 5th; boundaries anchor to the FY start (tests L6, L7). Written as "larger" at 14:38, superseded once the one-rule algorithm landed |
 
 ---
 

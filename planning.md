@@ -69,7 +69,7 @@ interface FinancialYearGroup {
   start: IsoDate; end: IsoDate;
   days: number;            // whole FY length
   periodsInYear: number;   // 12, 4, 53, 27 …
-  periods: Period[];       // only those from startDate onward
+  periods: Period[];       // from startDate onward, or the whole year when firstYearScope = wholeYear
 }
 interface Period { start: IsoDate; end: IsoDate; number: number; days: number }
 interface ValidationError { field: keyof PeriodsRequest | 'request'; code: string; message: string }
@@ -89,13 +89,13 @@ Start        End          Period Number
 2020-07-01   2020-07-31   1
 ```
 
-* `Start` and `End` cells are 10 chars + `columnGap` spaces.
+* `Start` and `End` cells are the widest rendered date (10 chars for ISO) + `columnGap` spaces.
 * One blank line between financial years.
 
 ### 4.3 Expected HTML output
 
 One `<section class="periods">` per FY with `<h2>`, a `<p>` for days, and a `<table>` with a
-`<thead>` and one `<tr>` per period. Errors render as `<p role="alert">`.
+`<thead>` and one `<tr>` per period. Date cells are `<time datetime="iso">rendered</time>`. Errors render as `<p role="alert">`.
 
 ---
 
@@ -119,12 +119,12 @@ flowchart LR
 | Types + defaults | `src/types.ts` | request, response, options, `DEFAULTS`, `resolveConfig` | ✅ |
 | Date helpers | `src/dates.ts` | y/m/d integers, `Date.UTC` arithmetic, ISO parse/format | ✅ |
 | FY rule | `src/financialYear.ts` | FY containing a date for a given `financialYearStart`; label; days | ✅ |
-| Period scheme | `src/periods.ts` | period boundaries inside an FY for a `periodLength` + `remainderPolicy`; infinite generator from a start date | ✅ |
+| Period scheme | `src/periods.ts` | period boundaries inside an FY for a `periodLength` + `remainderPolicy`; infinite generator from a start date honouring `firstYearScope` | ✅ |
 | Grouping | `src/grouping.ts` | adjacent grouping of the stream into FY groups, lazy | ✅ |
 | Calculate | `src/calculate.ts` | `calculate(request): PeriodsResponse` | ✅ |
 | Format | `src/format.ts` | `format(response, options): string`; `formatText`, `formatHtml` | ✅ |
-| CLI | `src/cli.ts` | args → request → calculate → format text → stdout | side effects |
-| Demo | `index.html`, `src/main.ts` | form → request → calculate → format html → DOM | side effects |
+| CLI | `src/cli.ts` | args → request → calculate → format text / html / json → stdout, exit code | side effects |
+| Demo | `index.html`, `src/main.ts` | form → request → calculate → format text or html → DOM; shows resolved config | side effects |
 
 ### Period boundary algorithm (one rule for every length)
 
@@ -159,12 +159,15 @@ flowchart LR
 | 3 | 14:55–15:05 | `periods.ts` (all four lengths), `grouping.ts` + tests | ✅ |
 | 4 | 15:05–15:12 | `calculate.ts` with validation, `format.ts` text + golden test | ✅ |
 | 5 | 15:12–15:20 | `format.ts` html, `cli.ts`, `index.html` demo | ✅ |
-| 6 | 15:20–15:25 | Final run, update docs | ✅ |
+| 6 | 14:50–14:55 | Final run, update docs (ran early) | ✅ |
+| 7 | 14:58–15:08 | Brian's follow-ups: README, blank page from disk, `firstYearScope` | ✅ |
+| 8 | 15:09–15:14 | Publish to GitHub, `dateFormat` option | ✅ |
+| 9 | 15:15–15:22 | Regression, cleanup, docs sweep, final push | ✅ |
 
 ---
 
 ## 8. Out of scope (deliberately)
 
-* Time zones / locale date formats (dates are pure y/m/d; `dateFormat` is a stub).
+* Time zones and locale-aware date formatting (dates are pure y/m/d; `dateFormat` offers four fixed styles).
 * 4-4-5 and 13×4-week retail calendars (would be new `periodLength` members).
-* Non-month-aligned FY ends like UK 5 April **are** supported by the algorithm (FY start is any day) but untested beyond one case.
+* Non-month-aligned FY ends like UK 5 April **are** supported by the algorithm (FY start is any day) with tests L6 and L7 for mid-month FY starts.

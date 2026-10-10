@@ -1,5 +1,7 @@
 # Progress — Accounting Periods
 
+**Status: ✅ COMPLETED 15:22** · all work committed and pushed to https://github.com/Ironstone/accounting-periods
+
 **Start:** 14:25 · **Deadline:** 15:25 · Legend: ✅ done · ⏳ in progress · ⏸️ blocked · ➖ not started · ❌ dropped · ⚠️ done with caveat
 
 ---
@@ -21,8 +23,8 @@
 | 4.1 | `src/calculate.ts` validation + defaults, tests V1–V10 | ✅ | 14:49 | |
 | 4.2 | `src/format.ts` text + html, golden fixture, tests T1–T3, H1–H5 | ✅ | 14:50 | golden failed once on a doubled trailing newline; fixed |
 | 4.3 | `src/cli.ts` + `npm run cli` | ✅ | 14:50 | needed `tsx` + `@types/node`; vitest 5 dropped vite-node |
-| 5.1 | `index.html` + `src/main.ts` demo | ✅ | 14:55 | `vite build` passes; happy-dom test M1–M4 loads the real markup and drives the form. Not opened in a desktop browser |
-| 5.2 | `npm run test:ui` check | ➖ | | not run; `@vitest/ui` is installed |
+| 5.1 | `index.html` + `src/main.ts` demo | ✅ | 14:55 | `vite build` passes; happy-dom test M1–M4 loads the real markup and drives the form. Rendered in headless Edge at 15:01 (dev and preview) |
+| 5.2 | `npm run test:ui` check | ❌ | | dropped: not needed for the deliverable. `@vitest/ui` is installed and the script exists |
 | 5.3 | README.md, .gitignore | ✅ | 14:51 | |
 | 6.1 | Full test run green, results logged in testing.md | ✅ | 14:55 | 62 / 62 |
 | 6.2 | decisions.md updated with what was learned while coding | ✅ | 14:56 | A17–A23 |
@@ -45,7 +47,16 @@
 | 14:50 | Demo page builds |
 | 14:52 | Docs updated |
 | 14:53 | happy-dom test for the demo page; three happy-dom quirks worked around in the test (see testing.md §5) |
-| 14:55 | 62 / 62 green. Done with ~30 minutes of the hour left |
+| 14:55 | 62 / 62 green. Core done with ~30 minutes of the hour left |
+| 14:58 | Brian: README as first-read doc; page blank when opened from disk (A24) |
+| 15:01 | Dev and preview pages rendered in headless Edge |
+| 15:03 | Brian: 29 Feb weekly starts at period 35. New `firstYearScope` parameter (A25) |
+| 15:09 | Brian: publish to the ironstone GitHub account; add a date format option |
+| 15:12 | Public repo https://github.com/Ironstone/accounting-periods created with the stored Ironstone credential (A27) |
+| 15:13 | `dateFormat` option (A26); 74 tests; first push to `main` |
+| 15:17 | Final regression run, all green; logged and pushed |
+| 15:20 | Docs sweep for stale details |
+| 15:22 | Task completed; docs committed and pushed |
 
 ---
 
@@ -55,11 +66,14 @@
 |---|---|
 | `npx tsc --noEmit` | ✅ exit 0 |
 | `npx vitest run` | ✅ 7 files, 74 tests, 0 failed |
-| `npm run cli -- 2020-07-02` | ✅ byte-identical to the brief's sample (golden test T1) |
+| `npm run cli -- 2020-07-02` | ✅ byte-identical to the brief's sample (golden test T1, re-diffed at 15:17) |
+| CLI variants: quarters, weeks (53 / 52), fortnights (27), whole first year, long dates, html, json | ✅ |
 | `npm run cli -- 2020-02-30 --years 0` | ✅ two errors, exit code 1 |
-| `npx vite build` | ✅ dist/index.html + one JS chunk |
-| Demo page under happy-dom (M1–M4) | ✅ renders, re-renders on input, text mode, error alert |
-| Demo page in a desktop browser | ⚠️ not run (`npm run dev`) |
+| `npm run cli -- --date-format xyz` | ✅ exit code 2 |
+| `npx vite build` from a clean `dist/` | ✅ dist/index.html + one JS chunk |
+| Demo page under happy-dom (M1–M5) | ✅ renders, re-renders on input, text mode, whole first year, error alert |
+| Demo page in headless Edge, dev server and preview | ✅ two financial years each (15:01, 15:17) |
+| Git | ✅ working tree clean, `main` equal to `origin/main` |
 
 ---
 
@@ -84,3 +98,7 @@
 | 8.1 | Brian: publish as a public repo on the ironstone account | ✅ | 15:12 | https://github.com/Ironstone/accounting-periods created; pushed after 8.2 |
 | 8.2 | Brian: date format option for the output | ✅ | 15:14 | `dateFormat` iso / dmy / mdy / long on `format`, CLI `--date-format`, page select. Tests F-iso…F-long, F-width, F-html, F-passthrough (A26) |
 | 9.1 | Final regression run | ✅ | 15:17 | tsc, 74/74 tests, clean build, CLI golden identical to the brief, 10 CLI variants, dev + preview pages render in headless Edge, working tree clean and equal to origin/main |
+| 9.2 | Cleanup | ✅ | 15:17 | dev and preview servers stopped; `dist/` rebuilt from clean and left gitignored; no stray debug files (`test/_debug.test.ts` removed at 14:54) |
+| 9.3 | Docs sweep | ✅ | 15:21 | stale counts, "not opened in a browser" notes, `dateFormat` stub wording, first-year scope in the contract comment, UK 5 April pivot now marked supported, interview notes updated with the live pivots |
+| 9.4 | Commit and push the docs | ✅ | 15:22 | `main` equal to `origin/main` |
+| 10 | **Task completed** | ✅ | 15:22 | brief met, Brian's extensions met, published, documented |
