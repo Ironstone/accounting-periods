@@ -83,3 +83,4 @@
 | 7.3 | Brian: 29 Feb 2020 weekly shows periods 35–53 only | ✅ | 15:08 | by design (from start date), but ambiguous. New parameter `firstYearScope` with default unchanged; `wholeYear` option on CLI and page (A25). Tests P8, P9, V11, V12, M5 |
 | 8.1 | Brian: publish as a public repo on the ironstone account | ✅ | 15:12 | https://github.com/Ironstone/accounting-periods created; pushed after 8.2 |
 | 8.2 | Brian: date format option for the output | ✅ | 15:14 | `dateFormat` iso / dmy / mdy / long on `format`, CLI `--date-format`, page select. Tests F-iso…F-long, F-width, F-html, F-passthrough (A26) |
+| 9.1 | Final regression run | ✅ | 15:17 | tsc, 74/74 tests, clean build, CLI golden identical to the brief, 10 CLI variants, dev + preview pages render in headless Edge, working tree clean and equal to origin/main |

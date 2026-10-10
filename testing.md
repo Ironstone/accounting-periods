@@ -179,3 +179,19 @@ happy-dom quirks worked around **in the test, never in the page**:
 | `<input type=number>` clamps to `min`, so `financialYears: 0` cannot be typed | M4 uses 30 February instead |
 | `RadioNodeList.value` has no setter | test sets `checked` on the radio input |
 | `import.meta.url` is `http:` inside the environment | fixture path resolved from `process.cwd()` |
+
+---
+
+## 6. Final regression (15:17)
+
+| Check | Result |
+|---|---|
+| `tsc --noEmit` | ✅ |
+| `vitest run` | ✅ 7 files, 74 tests |
+| `vite build` from clean `dist/` | ✅ |
+| CLI default 2020-07-02, 2 years, diffed against `test/fixtures/sample.txt` | ✅ identical |
+| CLI quarters 4 · weeks 53 · weeks extend 52 · fortnights 27 · whole first year 53 rows | ✅ |
+| CLI `--date-format long`, `--format html` (12 rows), `--json` (6 config keys) | ✅ |
+| CLI bad input exit 1 · bad `--date-format` exit 2 | ✅ |
+| `npm run dev` and `npm run preview` pages in headless Edge | ✅ 2 sections each |
+| Working tree vs `origin/main` | ✅ no real diff, 0 ahead / 0 behind |
