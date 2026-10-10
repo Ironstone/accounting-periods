@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accounting Periods</title>
+  <style>
+    :root { --bg: #ffffff; --fg: #1a1a1a; --muted: #555; --line: #d0d0d0; --panel: #f4f4f6; --accent: #0a5fb4; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #15171b; --fg: #e8e8e8; --muted: #a8a8a8; --line: #3a3d44; --panel: #1f2228; --accent: #6fb3ff; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
+    h1 { font-size: 1.4rem; margin: 0 0 12px; }
+    h2 { font-size: 1.1rem; margin: 20px 0 4px; }
+    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; padding: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+    label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: var(--muted); }
+    input, select { padding: 6px 8px; font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; }
+    .row { display: flex; gap: 8px; }
+    .row input { width: 100%; }
+    fieldset { border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; display: flex; gap: 14px; align-items: center; }
+    fieldset label { flex-direction: row; align-items: center; gap: 6px; color: var(--fg); }
+    table { border-collapse: collapse; margin: 6px 0 12px; }
+    th, td { text-align: left; padding: 3px 14px 3px 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th { color: var(--muted); font-weight: 600; }
+    pre { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; }
+    .error { padding: 8px 12px; border: 1px solid var(--line); border-left: 6px solid var(--accent); border-radius: 4px; }
+    details { margin-top: 16px; }
+    summary { cursor: pointer; color: var(--muted); }
+    .days { margin: 0 0 4px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <h1>Accounting Periods</h1>
+
+  <form id="form">
+    <label>Start date <input type="date" name="startDate" value="2020-07-02" /></label>
+    <label>Financial year starts
+      <span class="row">
+        <select name="fyMonth">
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7" selected>July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <input type="number" name="fyDay" min="1" max="31" value="1" title="day of month" />
+      </span>
+    </label>
+    <label>Period length
+      <select name="periodLength">
+        <option value="week">Week</option><option value="fortnight">Fortnight</option>
+        <option value="month" selected>Month</option><option value="quarter">Quarter</option>
+      </select>
+    </label>
+    <label>Leftover days (weeks and fortnights only)
+      <select name="remainderPolicy">
+        <option value="shortLastPeriod" selected>Add a short final period</option>
+        <option value="extendLastPeriod">Extend the last full period</option>
+      </select>
+    </label>
+    <label>Financial years <input type="number" name="financialYears" min="1" max="50" value="2" /></label>
+    <fieldset>
+      <legend style="font-size:0.85rem;color:var(--muted)">First year</legend>
+      <label><input type="checkbox" name="wholeFirstYear" /> Show from period 1, not just from the start date</label>
+    </fieldset>
+    <fieldset>
+      <label><input type="radio" name="kind" value="html" checked /> HTML table</label>
+      <label><input type="radio" name="kind" value="text" /> Text</label>
+      <label><input type="checkbox" name="showDays" checked /> Show days</label>
+    </fieldset>
+  </form>
+
+  <div id="output" aria-live="polite">
+    <p class="error">⏳ Waiting for the script to run. If this message stays, the page was opened
+      straight from disk. Serve it instead: <code>npm run dev</code> (source) or
+      <code>npm run build &amp;&amp; npm run preview</code> (built copy).</p>
+  </div>
+
+  <details>
+    <summary>Resolved configuration (what the calculation actually used)</summary>
+    <pre id="config"></pre>
+  </details>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
