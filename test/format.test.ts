@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { calculate } from '../src/calculate';
-import { format } from '../src/format';
+import { format, formatDate } from '../src/format';
 import type { PeriodsResponse } from '../src/types';
 
 const sample = readFileSync(new URL('./fixtures/sample.txt', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
@@ -36,6 +36,41 @@ describe('format — text', () => {
   });
 });
 
+describe('format — dateFormat', () => {
+  const one = calculate({ startDate: '2020-07-02', financialYears: 1 });
+
+  it.each([
+    ['iso', '2020-07-01', '2020-07-31'],
+    ['dmy', '01/07/2020', '31/07/2020'],
+    ['mdy', '07/01/2020', '07/31/2020'],
+    ['long', '1 Jul 2020', '31 Jul 2020'],
+  ] as const)('F-%s renders the first row as %s to %s', (style, start, end) => {
+    expect(formatDate('2020-07-01', style)).toBe(start);
+    const row = format(one, { dateFormat: style }).split('\n')[5]!;
+    expect(row.startsWith(start)).toBe(true);
+    expect(row).toContain(end);
+    expect(row.trimEnd().endsWith('1')).toBe(true);
+  });
+
+  it('F-width: columns widen to the longest rendered date and stay aligned', () => {
+    const lines = format(one, { dateFormat: 'long' }).split('\n');
+    const header = lines[4]!;
+    const cells = lines.slice(5).filter(Boolean).flatMap((l) => l.split(/\s{3,}/).slice(0, 2));
+    const widest = Math.max(...cells.map((c) => c.length)); // "31 Jul 2020" = 11
+    expect(header.indexOf('End')).toBe(widest + 3);
+    expect(header.indexOf('Period Number')).toBe(2 * (widest + 3));
+  });
+
+  it('F-html: cells keep the ISO value in a <time datetime> attribute', () => {
+    const html = format(one, { kind: 'html', dateFormat: 'dmy' });
+    expect(html).toContain('<time datetime="2020-07-01">01/07/2020</time>');
+  });
+
+  it('F-passthrough: a non-ISO string is returned untouched', () => {
+    expect(formatDate('not a date', 'long')).toBe('not a date');
+  });
+});
+
 describe('format — html', () => {
   const ok = calculate({ startDate: '2020-07-02', financialYears: 1 });
 
@@ -45,7 +80,7 @@ describe('format — html', () => {
     expect(html).toContain('<h2>Financial Year 2020-2021</h2>');
     expect(html).toContain('<p class="days">Days: 365</p>');
     expect(html.match(/<tbody>[\s\S]*<\/tbody>/)![0].match(/<tr>/g)).toHaveLength(12);
-    expect(html).toContain('<tr><td>2020-07-01</td><td>2020-07-31</td><td>1</td></tr>');
+    expect(html).toContain('<tr><td><time datetime="2020-07-01">2020-07-01</time></td><td><time datetime="2020-07-31">2020-07-31</time></td><td>1</td></tr>');
   });
 
   it('H2 errors render as role=alert paragraphs with escaping', () => {

@@ -54,7 +54,7 @@
 | Check | Result |
 |---|---|
 | `npx tsc --noEmit` | ✅ exit 0 |
-| `npx vitest run` | ✅ 7 files, 67 tests, 0 failed |
+| `npx vitest run` | ✅ 7 files, 74 tests, 0 failed |
 | `npm run cli -- 2020-07-02` | ✅ byte-identical to the brief's sample (golden test T1) |
 | `npm run cli -- 2020-02-30 --years 0` | ✅ two errors, exit code 1 |
 | `npx vite build` | ✅ dist/index.html + one JS chunk |
@@ -81,3 +81,5 @@
 | 7.1 | Brian: page shows no output | ✅ | 15:00 | reproduced as "script never ran"; via `npm run dev` headless Edge renders both years. Cause: opened from disk. Page now says so instead of staying blank (A24) |
 | 7.2 | Brian: README as the first-read document | ✅ | 15:00 | problem → what was built → set up → test → view → options → code use → judgement calls |
 | 7.3 | Brian: 29 Feb 2020 weekly shows periods 35–53 only | ✅ | 15:08 | by design (from start date), but ambiguous. New parameter `firstYearScope` with default unchanged; `wholeYear` option on CLI and page (A25). Tests P8, P9, V11, V12, M5 |
+| 8.1 | Brian: publish as a public repo on the ironstone account | ✅ | 15:12 | https://github.com/Ironstone/accounting-periods created; pushed after 8.2 |
+| 8.2 | Brian: date format option for the output | ✅ | 15:14 | `dateFormat` iso / dmy / mdy / long on `format`, CLI `--date-format`, page select. Tests F-iso…F-long, F-width, F-html, F-passthrough (A26) |

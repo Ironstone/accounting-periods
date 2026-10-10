@@ -87,11 +87,17 @@ export type PeriodsResponse =
   | { ok: true; config: ResolvedConfig; financialYears: FinancialYearGroup[] }
   | { ok: false; errors: ValidationError[] };
 
+/**
+ * How dates are written in the output.
+ * iso 2020-07-01 · dmy 01/07/2020 · mdy 07/01/2020 · long 1 Jul 2020
+ */
+export const DATE_FORMATS = ['iso', 'dmy', 'mdy', 'long'] as const;
+export type DateFormat = (typeof DATE_FORMATS)[number];
+
 /** Display options. Every field has a default; see FORMAT_DEFAULTS. */
 export interface FormatOptions {
   kind?: 'text' | 'html';
-  /** Placeholder for locale formats later. Only 'iso' today. */
-  dateFormat?: 'iso';
+  dateFormat?: DateFormat;
   /** Spaces after each date cell in text mode. The sample uses 3. */
   columnGap?: number;
   showDays?: boolean;

@@ -2,7 +2,7 @@
 
 **Runner:** Vitest · **Run:** `npm test` (once) · `npm run test:watch` · `npm run test:ui` (browser view)
 
-**Latest result (15:08):** ✅ 7 files, **67 tests passed**, 0 failed · `tsc --noEmit` clean
+**Latest result (15:14):** ✅ 7 files, **74 tests passed**, 0 failed · `tsc --noEmit` clean
 
 ---
 
@@ -114,6 +114,10 @@ No mocking. Every module except `cli.ts` and `main.ts` is pure. `calculate` take
 | H3 | text, errors | `Error:` lines | ✅ |
 | H4 | showDays false (text and html) | no days line / paragraph | ✅ |
 | H5 | cssClass | applied | ✅ |
+| F-iso/dmy/mdy/long | first row in each date style | `2020-07-01`, `01/07/2020`, `07/01/2020`, `1 Jul 2020` | ✅ |
+| F-width | `long` style | Start/End/Period Number columns aligned to the widest date + gap | ✅ |
+| F-html | `dmy` in HTML | `<time datetime="2020-07-01">01/07/2020</time>` | ✅ |
+| F-passthrough | non-ISO string | returned untouched | ✅ |
 
 ### 2.7 Demo page (happy-dom)
 
@@ -154,6 +158,7 @@ npm run dev         # index.html demo
 | 14:53 | `vitest run` (main.test.ts) | ❌ 3 / 4 | happy-dom quirks, see §5 |
 | 14:55 | `vitest run` | ✅ 62 / 62 | demo page covered |
 | 15:08 | `vitest run` | ✅ 67 / 67 | firstYearScope added (P8, P9, V11, V12, M5) |
+| 15:14 | `vitest run` | ✅ 74 / 74 | dateFormat added; F-width assertion corrected to measure both date columns |
 | 15:01 | headless Edge, `npm run dev` and `npm run preview` | ✅ | both render 2 `<section class="periods">`; blank page only when opened from disk |
 
 ---

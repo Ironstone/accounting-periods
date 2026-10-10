@@ -63,6 +63,14 @@
       <legend style="font-size:0.85rem;color:var(--muted)">First year</legend>
       <label><input type="checkbox" name="wholeFirstYear" /> Show from period 1, not just from the start date</label>
     </fieldset>
+    <label>Date format
+      <select name="dateFormat">
+        <option value="iso" selected>2020-07-01 (ISO)</option>
+        <option value="dmy">01/07/2020 (day/month/year)</option>
+        <option value="mdy">07/01/2020 (month/day/year)</option>
+        <option value="long">1 Jul 2020</option>
+      </select>
+    </label>
     <fieldset>
       <label><input type="radio" name="kind" value="html" checked /> HTML table</label>
       <label><input type="radio" name="kind" value="text" /> Text</label>

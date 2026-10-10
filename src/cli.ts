@@ -1,7 +1,7 @@
 import { parseArgs } from 'node:util';
 import { calculate } from './calculate';
 import { format } from './format';
-import type { PeriodLength, PeriodsRequest, RemainderPolicy } from './types';
+import { DATE_FORMATS, type DateFormat, type PeriodLength, type PeriodsRequest, type RemainderPolicy } from './types';
 
 const HELP = `accounting-periods [startDate] [options]
 
@@ -12,6 +12,7 @@ const HELP = `accounting-periods [startDate] [options]
   --whole-first-year   list the first year from period 1, not just from startDate
   --years <n>          financial years to show (default 2)
   --format <kind>      text | html (default text)
+  --date-format <f>    iso | dmy | mdy | long (default iso)
   --no-days            hide the Days line
   --json               print the raw response instead of formatting it
   -h, --help
@@ -26,6 +27,7 @@ const { values, positionals } = parseArgs({
     years: { type: 'string' },
     'whole-first-year': { type: 'boolean' },
     format: { type: 'string' },
+    'date-format': { type: 'string' },
     'no-days': { type: 'boolean' },
     json: { type: 'boolean' },
     help: { type: 'boolean', short: 'h' },
@@ -53,6 +55,11 @@ const response = calculate(request);
 if (values.json) {
   process.stdout.write(JSON.stringify(response, null, 2) + '\n');
 } else {
-  process.stdout.write(format(response, { kind: values.format === 'html' ? 'html' : 'text', showDays: !values['no-days'] }));
+  const dateFormat = (values['date-format'] ?? 'iso') as DateFormat;
+  if (!DATE_FORMATS.includes(dateFormat)) {
+    process.stderr.write(`Error: --date-format must be one of ${DATE_FORMATS.join(', ')}, got "${dateFormat}"\n`);
+    process.exit(2);
+  }
+  process.stdout.write(format(response, { kind: values.format === 'html' ? 'html' : 'text', showDays: !values['no-days'], dateFormat }));
 }
 process.exit(response.ok ? 0 : 1);

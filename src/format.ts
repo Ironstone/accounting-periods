@@ -1,9 +1,39 @@
-import { resolveFormatOptions, type FinancialYearGroup, type FormatOptions, type PeriodsResponse, type ResolvedFormatOptions, type ValidationError } from './types';
+import { parseIso } from './dates';
+import {
+  resolveFormatOptions,
+  type DateFormat,
+  type FinancialYearGroup,
+  type FormatOptions,
+  type IsoDate,
+  type PeriodsResponse,
+  type ResolvedFormatOptions,
+  type ValidationError,
+} from './types';
 
 /** Display entry point: a response in, a string out. Dispatches on options.kind. */
 export function format(response: PeriodsResponse, options: FormatOptions = {}): string {
   const opts = resolveFormatOptions(options);
   return opts.kind === 'html' ? formatHtml(response, opts) : formatText(response, opts);
+}
+
+// ---------------------------------------------------------------------------
+// Dates
+// ---------------------------------------------------------------------------
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Render an ISO date in the chosen style. Unknown input is passed through untouched. */
+export function formatDate(iso: IsoDate, style: DateFormat): string {
+  const d = parseIso(iso);
+  if (!d) return iso;
+  const dd = String(d.d).padStart(2, '0');
+  const mm = String(d.m).padStart(2, '0');
+  switch (style) {
+    case 'dmy': return `${dd}/${mm}/${d.y}`;
+    case 'mdy': return `${mm}/${dd}/${d.y}`;
+    case 'long': return `${d.d} ${MONTHS[d.m - 1]} ${d.y}`;
+    default: return iso;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -17,12 +47,15 @@ export function formatText(response: PeriodsResponse, opts: ResolvedFormatOption
 }
 
 function textGroup(g: FinancialYearGroup, opts: ResolvedFormatOptions): string {
-  const width = 10 + opts.columnGap; // ISO date is 10 chars
+  const fmt = (iso: IsoDate) => formatDate(iso, opts.dateFormat);
+  // Column width follows the widest rendered date so non-ISO styles still line up.
+  const widest = Math.max(10, ...g.periods.flatMap((p) => [fmt(p.start).length, fmt(p.end).length]));
+  const width = widest + opts.columnGap;
   const cell = (s: string) => s.padEnd(width);
   const lines = [`Financial Year ${g.label}:`];
   if (opts.showDays) lines.push(`Days: ${g.days}`);
   lines.push('Periods:', '', `${cell('Start')}${cell('End')}Period Number`);
-  for (const p of g.periods) lines.push(`${cell(p.start)}${cell(p.end)}${p.number}`);
+  for (const p of g.periods) lines.push(`${cell(fmt(p.start))}${cell(fmt(p.end))}${p.number}`);
   return lines.join('\n');
 }
 
@@ -40,7 +73,10 @@ function htmlError(e: ValidationError): string {
 }
 
 function htmlGroup(g: FinancialYearGroup, opts: ResolvedFormatOptions): string {
-  const rows = g.periods.map((p) => `      <tr><td>${p.start}</td><td>${p.end}</td><td>${p.number}</td></tr>`).join('\n');
+  const fmt = (iso: IsoDate) => formatDate(iso, opts.dateFormat);
+  const rows = g.periods
+    .map((p) => `      <tr><td><time datetime="${p.start}">${fmt(p.start)}</time></td><td><time datetime="${p.end}">${fmt(p.end)}</time></td><td>${p.number}</td></tr>`)
+    .join('\n');
   const days = opts.showDays ? `  <p class="days">Days: ${g.days}</p>\n` : '';
   return [
     `<section class="${esc(opts.cssClass)}" data-financial-year="${esc(g.start)}">`,

@@ -48,7 +48,7 @@ display are separate functions with typed contracts.
 | Parameter | Type | Default | Why configurable |
 |---|---|---|---|
 | `kind` | `'text' \| 'html'` | `'text'` | the two displays asked for |
-| `dateFormat` | `'iso'` | `'iso'` | placeholder for locale formats later |
+| `dateFormat` | `'iso' \| 'dmy' \| 'mdy' \| 'long'` | `'iso'` | Brian asked for it at 15:09; display-only so it lives in `format` |
 | `columnGap` | integer | `3` | the sample pads with 3 spaces after a 10-char date |
 | `showDays` | boolean | `true` | Phil may want a terser table |
 | `cssClass` | string | `'periods'` | lets the HTML host style it |

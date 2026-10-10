@@ -2,13 +2,13 @@
 // No logic lives here; it only maps inputs to the typed request and shows the result.
 import { calculate } from './calculate';
 import { format } from './format';
-import type { PeriodLength, PeriodsRequest, RemainderPolicy } from './types';
+import type { DateFormat, PeriodLength, PeriodsRequest, RemainderPolicy } from './types';
 
 const form = document.getElementById('form') as HTMLFormElement;
 const output = document.getElementById('output') as HTMLDivElement;
 const configEl = document.getElementById('config') as HTMLPreElement;
 
-function readRequest(): { request: PeriodsRequest; kind: 'text' | 'html'; showDays: boolean } {
+function readRequest(): { request: PeriodsRequest; kind: 'text' | 'html'; showDays: boolean; dateFormat: DateFormat } {
   const data = new FormData(form);
   const str = (k: string) => String(data.get(k) ?? '');
   const request: PeriodsRequest = {
@@ -20,14 +20,19 @@ function readRequest(): { request: PeriodsRequest; kind: 'text' | 'html'; showDa
   };
   // A cleared date field means "use the default" (today), not an error.
   if (str('startDate')) request.startDate = str('startDate');
-  return { request, kind: str('kind') === 'text' ? 'text' : 'html', showDays: data.get('showDays') !== null };
+  return {
+    request,
+    kind: str('kind') === 'text' ? 'text' : 'html',
+    showDays: data.get('showDays') !== null,
+    dateFormat: (str('dateFormat') || 'iso') as DateFormat,
+  };
 }
 
 function render(): void {
   try {
-    const { request, kind, showDays } = readRequest();
+    const { request, kind, showDays, dateFormat } = readRequest();
     const response = calculate(request);
-    const text = format(response, { kind, showDays });
+    const text = format(response, { kind, showDays, dateFormat });
 
     if (kind === 'html') {
       output.innerHTML = text; // produced by our own formatter, which escapes all dynamic values
