@@ -120,6 +120,8 @@ export type DateFormat = (typeof DATE_FORMATS)[number];
 export interface FormatOptions {
   kind?: 'text' | 'html';
   dateFormat?: DateFormat;
+  /** Prefix each date with its weekday, e.g. "Mon 2020-07-06". Off by default to match the brief. */
+  showWeekday?: boolean;
   /** Spaces after each date cell in text mode. The sample uses 3. */
   columnGap?: number;
   showDays?: boolean;
@@ -154,6 +156,7 @@ export function defaultYearStartRule(periodLength: PeriodLength): YearStartRule 
 export const FORMAT_DEFAULTS: ResolvedFormatOptions = {
   kind: 'text',
   dateFormat: 'iso',
+  showWeekday: false,
   columnGap: 3,
   showDays: true,
   cssClass: 'periods',

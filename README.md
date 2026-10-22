@@ -80,7 +80,7 @@ npm install
 ## 4. Test
 
 ```bash
-npm test            # run the 93 tests once
+npm test            # run the 94 tests once
 npm run test:watch  # re-run on change
 npm run test:ui     # the same tests in a browser view
 npm run typecheck   # strict TypeScript, no emit
@@ -100,7 +100,7 @@ npm run cli -- 2020-07-02                                      # the brief's exa
 npm run cli -- 2020-01-15 --fy-start 01-01 --period quarter     # calendar year, quarters
 npm run cli -- 2020-07-02 --period week --remainder extendLastPeriod --years 1
 npm run cli -- 2020-02-29 --period week --whole-first-year       # first year from period 1
-npm run cli -- 2020-07-06 --period 4-4-5 --years 1              # retail calendar, year starts Monday 6 Jul 2020
+npm run cli -- 2020-07-06 --period 4-4-5 --years 1 --weekday    # retail calendar with Mon/Sun on every row
 npm run cli -- 2020-07-02 --date-format long                    # 1 Jul 2020 style dates
 npm run cli -- 2020-07-02 --format html                         # HTML fragment
 npm run cli -- 2020-07-02 --json                                # the raw typed response
@@ -144,6 +144,7 @@ defaults. If you see a "Waiting for the script to run" message, the page was ope
 |---|---|---|---|
 | `kind` | `'text'` | `text`, `html` | `--format` |
 | `showDays` | `true` | `false` hides the `Days:` line | `--no-days` |
+| `showWeekday` | `false` | `true` prefixes every date with its weekday, `Mon 2020-07-06`; text columns widen to fit | `--weekday` |
 | `columnGap` | `3` | spaces after each date cell in text mode | — |
 | `cssClass` | `'periods'` | class on each `<section>` in HTML mode | — |
 | `dateFormat` | `'iso'` | `iso` 2020-07-01 · `dmy` 01/07/2020 · `mdy` 07/01/2020 · `long` 1 Jul 2020. Text columns widen to fit; HTML keeps ISO in `<time datetime>` | `--date-format` |

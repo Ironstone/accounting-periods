@@ -14,6 +14,7 @@ const HELP = `accounting-periods [startDate] [options]
   --years <n>          financial years to show (default 2)
   --format <kind>      text | html (default text)
   --date-format <f>    iso | dmy | mdy | long (default iso)
+  --weekday            prefix each date with its weekday, e.g. Mon 2020-07-06
   --no-days            hide the Days line
   --json               print the raw response instead of formatting it
   -h, --help
@@ -30,6 +31,7 @@ const { values, positionals } = parseArgs({
     'whole-first-year': { type: 'boolean' },
     format: { type: 'string' },
     'date-format': { type: 'string' },
+    weekday: { type: 'boolean' },
     'no-days': { type: 'boolean' },
     json: { type: 'boolean' },
     help: { type: 'boolean', short: 'h' },
@@ -63,6 +65,6 @@ if (values.json) {
     process.stderr.write(`Error: --date-format must be one of ${DATE_FORMATS.join(', ')}, got "${dateFormat}"\n`);
     process.exit(2);
   }
-  process.stdout.write(format(response, { kind: values.format === 'html' ? 'html' : 'text', showDays: !values['no-days'], dateFormat }));
+  process.stdout.write(format(response, { kind: values.format === 'html' ? 'html' : 'text', showDays: !values['no-days'], dateFormat, showWeekday: !!values.weekday }));
 }
 process.exit(response.ok ? 0 : 1);

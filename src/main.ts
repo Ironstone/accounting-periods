@@ -8,7 +8,7 @@ const form = document.getElementById('form') as HTMLFormElement;
 const output = document.getElementById('output') as HTMLDivElement;
 const configEl = document.getElementById('config') as HTMLPreElement;
 
-function readRequest(): { request: PeriodsRequest; kind: 'text' | 'html'; showDays: boolean; dateFormat: DateFormat } {
+function readRequest(): { request: PeriodsRequest; kind: 'text' | 'html'; showDays: boolean; showWeekday: boolean; dateFormat: DateFormat } {
   const data = new FormData(form);
   const str = (k: string) => String(data.get(k) ?? '');
   const request: PeriodsRequest = {
@@ -26,15 +26,16 @@ function readRequest(): { request: PeriodsRequest; kind: 'text' | 'html'; showDa
     request,
     kind: str('kind') === 'text' ? 'text' : 'html',
     showDays: data.get('showDays') !== null,
+    showWeekday: data.get('showWeekday') !== null,
     dateFormat: (str('dateFormat') || 'iso') as DateFormat,
   };
 }
 
 function render(): void {
   try {
-    const { request, kind, showDays, dateFormat } = readRequest();
+    const { request, kind, showDays, showWeekday, dateFormat } = readRequest();
     const response = calculate(request);
-    const text = format(response, { kind, showDays, dateFormat });
+    const text = format(response, { kind, showDays, showWeekday, dateFormat });
 
     if (kind === 'html') {
       output.innerHTML = text; // produced by our own formatter, which escapes all dynamic values

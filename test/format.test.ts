@@ -66,6 +66,17 @@ describe('format — dateFormat', () => {
     expect(html).toContain('<time datetime="2020-07-01">01/07/2020</time>');
   });
 
+  it('F-weekday: showWeekday prefixes dates in text and html and widens the columns', () => {
+    expect(formatDate('2020-07-06', 'iso', true)).toBe('Mon 2020-07-06');
+    expect(formatDate('2020-07-05', 'long', true)).toBe('Sun 5 Jul 2020');
+    const text = format(one, { showWeekday: true });
+    expect(text.split('\n')[4]).toBe('Start            End              Period Number');
+    expect(text.split('\n')[5]).toBe('Wed 2020-07-01   Fri 2020-07-31   1');
+    const html = format(one, { kind: 'html', showWeekday: true });
+    expect(html).toContain('<time datetime="2020-07-01">Wed 2020-07-01</time>');
+    expect(format(one)).not.toContain('Wed'); // default stays off
+  });
+
   it('F-passthrough: a non-ISO string is returned untouched', () => {
     expect(formatDate('not a date', 'long')).toBe('not a date');
   });

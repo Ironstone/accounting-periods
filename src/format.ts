@@ -1,4 +1,4 @@
-import { parseIso } from './dates';
+import { dayOfWeek, parseIso } from './dates';
 import {
   resolveFormatOptions,
   type DateFormat,
@@ -21,19 +21,22 @@ export function format(response: PeriodsResponse, options: FormatOptions = {}): 
 // ---------------------------------------------------------------------------
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-/** Render an ISO date in the chosen style. Unknown input is passed through untouched. */
-export function formatDate(iso: IsoDate, style: DateFormat): string {
+/** Render an ISO date in the chosen style, optionally prefixed with its weekday. Unknown input passes through. */
+export function formatDate(iso: IsoDate, style: DateFormat, showWeekday = false): string {
   const d = parseIso(iso);
   if (!d) return iso;
   const dd = String(d.d).padStart(2, '0');
   const mm = String(d.m).padStart(2, '0');
+  let out: string;
   switch (style) {
-    case 'dmy': return `${dd}/${mm}/${d.y}`;
-    case 'mdy': return `${mm}/${dd}/${d.y}`;
-    case 'long': return `${d.d} ${MONTHS[d.m - 1]} ${d.y}`;
-    default: return iso;
+    case 'dmy': out = `${dd}/${mm}/${d.y}`; break;
+    case 'mdy': out = `${mm}/${dd}/${d.y}`; break;
+    case 'long': out = `${d.d} ${MONTHS[d.m - 1]} ${d.y}`; break;
+    default: out = iso;
   }
+  return showWeekday ? `${WEEKDAYS[dayOfWeek(d)]} ${out}` : out;
 }
 
 // ---------------------------------------------------------------------------
@@ -47,7 +50,7 @@ export function formatText(response: PeriodsResponse, opts: ResolvedFormatOption
 }
 
 function textGroup(g: FinancialYearGroup, opts: ResolvedFormatOptions): string {
-  const fmt = (iso: IsoDate) => formatDate(iso, opts.dateFormat);
+  const fmt = (iso: IsoDate) => formatDate(iso, opts.dateFormat, opts.showWeekday);
   // Column width follows the widest rendered date so non-ISO styles still line up.
   const widest = Math.max(10, ...g.periods.flatMap((p) => [fmt(p.start).length, fmt(p.end).length]));
   const width = widest + opts.columnGap;
@@ -73,7 +76,7 @@ function htmlError(e: ValidationError): string {
 }
 
 function htmlGroup(g: FinancialYearGroup, opts: ResolvedFormatOptions): string {
-  const fmt = (iso: IsoDate) => formatDate(iso, opts.dateFormat);
+  const fmt = (iso: IsoDate) => formatDate(iso, opts.dateFormat, opts.showWeekday);
   const rows = g.periods
     .map((p) => `      <tr><td><time datetime="${p.start}">${fmt(p.start)}</time></td><td><time datetime="${p.end}">${fmt(p.end)}</time></td><td>${p.number}</td></tr>`)
     .join('\n');

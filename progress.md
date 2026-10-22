@@ -113,3 +113,4 @@
 | 11.1 | Reload context, verify 74 tests still green, open the demo page | ✅ | | repo unchanged since 10 Oct; GitHub page error from 10 Oct has cleared |
 | 11.2 | Explain the 4-4-5 problem and the change plan (6 steps) | ✅ | | see decisions.md §7 |
 | 11.3 | Brian: implement all six steps. Year starts on the first Monday on or after the FY start; map the year in the 4-4-5 pattern; include the pattern options | ✅ | | `periodLength` + 4 patterns, `yearStartRule` parameter with a length-dependent default, `financialYear.ts` rewritten for rule-based starts, page and CLI controls, 19 new tests (W, F12–F16, R1–R6, C1–C5, M6). A28–A33 |
+| 11.4 | Brian: show the weekday on dates | ✅ | | `showWeekday` format option, CLI `--weekday`, page checkbox; test F-weekday; 94 tests (A34) |

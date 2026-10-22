@@ -118,6 +118,7 @@ No mocking. Every module except `cli.ts` and `main.ts` is pure. `calculate` take
 | F-width | `long` style | Start/End/Period Number columns aligned to the widest date + gap | ✅ |
 | F-html | `dmy` in HTML | `<time datetime="2020-07-01">01/07/2020</time>` | ✅ |
 | F-passthrough | non-ISO string | returned untouched | ✅ |
+| F-weekday | `showWeekday: true` | `Wed 2020-07-01   Fri 2020-07-31   1`, header widened; HTML `<time>` text prefixed; default off | ✅ |
 
 ### 2.7 Demo page (happy-dom)
 
