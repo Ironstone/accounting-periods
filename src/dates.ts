@@ -81,6 +81,19 @@ export function endOfMonth(y: number, m: number): Ymd {
   return { y, m, d: daysInMonth(y, m) };
 }
 
+/** 0 = Sunday … 6 = Saturday, as in JS Date. Monday is 1. */
+export function dayOfWeek(d: Ymd): number {
+  return new Date(Date.UTC(d.y, d.m - 1, d.d)).getUTCDay();
+}
+
+export const MONDAY = 1;
+
+/** The first date on or after `d` that falls on `weekday` (0 = Sunday … 6 = Saturday). */
+export function nextWeekdayOnOrAfter(d: Ymd, weekday: number): Ymd {
+  const delta = (weekday - dayOfWeek(d) + 7) % 7;
+  return addDays(d, delta);
+}
+
 /** 1 Jul → 30 Jun = 365. Both ends count. */
 export function daysBetweenInclusive(a: Ymd, b: Ymd): number {
   return toEpochDay(b) - toEpochDay(a) + 1;

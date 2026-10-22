@@ -14,7 +14,7 @@ describe('calculate — defaults and validation', () => {
     const r = calculate({}, FIXED_NOW);
     expect(r.ok).toBe(true);
     if (!r.ok) return;
-    expect(r.config).toEqual({ ...DEFAULTS, startDate: '2026-10-10' });
+    expect(r.config).toEqual({ ...DEFAULTS, startDate: '2026-10-10', yearStartRule: 'exactDate' });
     expect(r.financialYears).toHaveLength(2);
     expect(r.financialYears[0]).toMatchObject({ label: '2026-2027' });
     expect(r.financialYears[0]!.periods[0]).toMatchObject({ start: '2026-10-01', number: 4 });
@@ -70,6 +70,7 @@ describe('calculate — defaults and validation', () => {
       periodLength: 'quarter',
       remainderPolicy: 'shortLastPeriod',
       firstYearScope: 'fromStartDate',
+      yearStartRule: 'exactDate',
       financialYears: 1,
     });
     expect(r.ok && r.financialYears[0]!.periodsInYear).toBe(4);

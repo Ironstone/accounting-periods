@@ -60,6 +60,16 @@ describe('demo page (index.html + main.ts)', () => {
     expect(output().querySelector('tbody td')!.textContent).toBe('2020-07-01');
   });
 
+  it('M6 choosing 4-4-5 applies the Monday rule by default: first full year starts 2020-07-06', () => {
+    (form().querySelector('input[name="kind"][value="html"]') as HTMLInputElement).checked = true;
+    (form().querySelector('input[name="wholeFirstYear"]') as HTMLInputElement).checked = false;
+    set('startDate', '2020-07-06');
+    set('periodLength', '4-4-5');
+    expect(rows()).toBe(24);
+    expect(output().querySelector('tbody td')!.textContent).toBe('2020-07-06');
+    expect(document.getElementById('config')!.textContent).toContain('"yearStartRule": "firstMondayOnOrAfter"');
+  });
+
   it('M4 an invalid request (30 February) shows an alert, not a table', () => {
     // happy-dom clamps <input type=number> to its min, so an out-of-range year count cannot be typed here.
     (form().querySelector('input[name="kind"][value="html"]') as HTMLInputElement).checked = true;

@@ -97,3 +97,17 @@ flowchart TD
 | A25 | Start date mid-year: should the first year list from period 1 or from the start date? (Brian, 15:03, 29 Feb 2020 weekly showed periods 35–53 only) | New parameter `firstYearScope`. Default **`fromStartDate`** (unchanged behaviour); `wholeYear` lists the first year from period 1 | The brief says "from a given start date", and its own example cannot distinguish the two readings. Both are reasonable, so it is a parameter. Later years are always complete either way | `firstYearScope: 'wholeYear'`, `--whole-first-year`, or the checkbox on the page | ✅ |
 | A26 | Date format in the output (Brian, 15:09) | `dateFormat` format option: `iso` (default), `dmy`, `mdy`, `long`. Text columns widen to the longest rendered date; HTML keeps the ISO value in `<time datetime>` | Display-only concern, so it lives in `format`, not `calculate`. Default stays ISO so the golden test and the brief's sample are unchanged | add a member to `DATE_FORMATS` and a case in `formatDate` | ✅ |
 | A27 | Where to publish | Public GitHub repo `Ironstone/accounting-periods`, created with the GitHub credential already stored in Windows Credential Manager for the Ironstone account | Brian asked for a public repo on the ironstone account to share; `gh` was not signed in but the stored credential had `repo` scope | — | ✅ |
+
+
+---
+
+## 7. Retail calendar (Phil's 4-4-5 question, 2026-10-22)
+
+| ID | Question | Call | Why | How to change | Status |
+|---|---|---|---|---|---|
+| A28 | How are 4-4-5 style calendars expressed? | Four new `periodLength` values: `4-4-5`, `4-5-4`, `5-4-4`, `13x4`. Each is a third scheme kind, a **pattern of weeks**; `advance(i)` is the cumulative sum of the pattern | Fits the one-rule design: only `advance` and the period count change. Quarters fall out of the pattern | add a pattern to `SCHEMES` in `periods.ts` | ✅ |
+| A29 | When does a retail year start? | New parameter `yearStartRule`: `exactDate` or `firstMondayOnOrAfter` the nominal `financialYearStart`. **Default follows the period length**: Monday rule for the patterns, exact date for everything else. Echoed in `config` | Brian's definition: the calendar starts on the first Monday on or after the FY start. A conditional default keeps the brief's output unchanged and makes 4-4-5 correct without extra flags | pass `yearStartRule` explicitly; CLI `--year-start`; page select | ✅ |
+| A30 | 53-week years | Under the Monday rule a year is exactly 52 or 53 weeks (364 or 371 days). A pattern's last period absorbs the extra week (4-4-6). `remainderPolicy` is ignored for patterns | That is how retailers run it; the period count is fixed by the pattern | a `shortLastPeriod` variant for patterns would be a 13th one-week period; not wanted | ✅ |
+| A31 | Year label under the Monday rule | Named after the **nominal** year(s): a year that starts Monday 6 July 2020 is still `2020-2021`; a 1 January Monday year is `2021` | Users think in nominal years | `build()` in `financialYear.ts` | ✅ |
+| A32 | A date between the nominal and the actual start (e.g. 2 July 2020, Monday rule) | Belongs to the **previous** year, which ends on Sunday 5 July | Every day belongs to exactly one year; the previous year's last period runs to the day before the next Monday | — | ✅ |
+| A33 | A pattern with `exactDate` | Allowed. 364 pattern days on a 365/366-day year: the last period absorbs the 1 or 2 odd days | Keeps the parameters orthogonal; the default steers users to the Monday rule | — | ✅ |

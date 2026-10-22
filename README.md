@@ -28,6 +28,7 @@ Brian then widened it:
 |---|---|
 | Configurable year | any start day and month, so a calendar year or any 12-month year works |
 | Configurable period | week, fortnight, month or quarter, so the periods per year can be 52/53, 26/27, 12 or 4 |
+| Retail calendar (added 22 Oct) | 4-4-5, 4-5-4, 5-4-4 and 13×4-week patterns, with the year starting on the first Monday on or after the financial year start |
 | Defaults everywhere | every option has a default; new behaviour first asks "is this a new parameter?" |
 | Calculate / format split | a typed request in, a typed response (with errors) out; a separate format step for text or HTML |
 
@@ -79,7 +80,7 @@ npm install
 ## 4. Test
 
 ```bash
-npm test            # run the 74 tests once
+npm test            # run the 93 tests once
 npm run test:watch  # re-run on change
 npm run test:ui     # the same tests in a browser view
 npm run typecheck   # strict TypeScript, no emit
@@ -99,6 +100,7 @@ npm run cli -- 2020-07-02                                      # the brief's exa
 npm run cli -- 2020-01-15 --fy-start 01-01 --period quarter     # calendar year, quarters
 npm run cli -- 2020-07-02 --period week --remainder extendLastPeriod --years 1
 npm run cli -- 2020-02-29 --period week --whole-first-year       # first year from period 1
+npm run cli -- 2020-07-06 --period 4-4-5 --years 1              # retail calendar, year starts Monday 6 Jul 2020
 npm run cli -- 2020-07-02 --date-format long                    # 1 Jul 2020 style dates
 npm run cli -- 2020-07-02 --format html                         # HTML fragment
 npm run cli -- 2020-07-02 --json                                # the raw typed response
@@ -130,8 +132,9 @@ defaults. If you see a "Waiting for the script to run" message, the page was ope
 |---|---|---|---|
 | `startDate` | today | any `yyyy-mm-dd` | first argument |
 | `financialYearStart` | `{ month: 7, day: 1 }` | any day and month; `{ month: 1 }` alone means 1 January | `--fy-start MM-DD` |
-| `periodLength` | `'month'` | `week`, `fortnight`, `month`, `quarter` | `--period` |
+| `periodLength` | `'month'` | `week`, `fortnight`, `month`, `quarter`, and the retail patterns `4-4-5`, `4-5-4`, `5-4-4`, `13x4` (periods are 4 or 5 whole weeks; 12 or 13 a year) | `--period` |
 | `remainderPolicy` | `'shortLastPeriod'` | `shortLastPeriod` (53 weeks, last one short), `extendLastPeriod` (52 weeks, last one long). Ignored for month and quarter | `--remainder` |
+| `yearStartRule` | `exactDate`, or `firstMondayOnOrAfter` for the retail patterns | `exactDate` (1 July is 1 July), `firstMondayOnOrAfter` (the year starts on the first Monday on or after that date, so it is 52 or 53 whole weeks; the last period absorbs a 53rd week) | `--year-start` |
 | `firstYearScope` | `'fromStartDate'` | `fromStartDate` (first year lists from the period containing the start date), `wholeYear` (first year lists from period 1). Later years are always complete | `--whole-first-year` |
 | `financialYears` | `2` | integer ≥ 1 | `--years` |
 
@@ -175,3 +178,4 @@ reason and how to reverse it. The two most likely to be challenged:
 | Days for a partially covered year | the whole year's length (365 or 366) | add `coveredDays` beside it |
 | Leftover days with weekly periods | 53 periods, the last one short | `remainderPolicy: 'extendLastPeriod'` |
 | Start date mid-year | first year lists from the start date's period | `firstYearScope: 'wholeYear'` |
+| Retail year start | first Monday on or after the nominal date, by default only for the patterns | `yearStartRule: 'exactDate'` |

@@ -128,6 +128,29 @@ No mocking. Every module except `cli.ts` and `main.ts` is pure. `calculate` take
 | M3 | switch to text mode | a `<pre>` containing the brief's header line | ✅ |
 | M4 | FY start 30 February | `role="alert"` shown, no table | ✅ |
 | M5 | start 2020-10-15, tick whole first year | rows go from 21 to 24, first cell 2020-07-01 | ✅ |
+| M6 | start 2020-07-06, period length 4-4-5 | 24 rows, first cell 2020-07-06, config shows `firstMondayOnOrAfter` | ✅ |
+
+### 2.8 Retail calendar (`retail.test.ts`, 22 Oct)
+
+| ID | Input | Expected | Status |
+|---|---|---|---|
+| W1, W2 | day-of-week and next-Monday helpers | 1 Jul 2020 is Wednesday → Monday 6 Jul; a Monday stays; Sunday → next day | ✅ |
+| F12 | Monday rule, nominal 1 Jul 2020 | 2020-07-06 → 2021-07-04, 364 days, label `2020-2021` | ✅ |
+| F13 | Monday rule, nominal 1 Jul 2024 (a Monday) | 2024-07-01 → 2025-07-06, 371 days | ✅ |
+| F14 | 2 Jul 2020 under the Monday rule | belongs to `2019-2020`, which ends 2020-07-05 | ✅ |
+| F15 | 1 Jan Monday rule | starts 2021-01-04, label `2021` | ✅ |
+| F16 | 10 consecutive years | contiguous, every start a Monday | ✅ |
+| R1 | 4-4-5, 52-week year | 12 periods, days 28/28/35 ×4, quarter boundaries, ends 2021-07-04 | ✅ |
+| R2 | 4-4-5, 53-week year | last period 42 days, total 371 | ✅ |
+| R3 | 4-5-4, 5-4-4 | 5-week period in the middle / at the start | ✅ |
+| R4 | 13x4 | 13 × 28 days; 35 for the last in a 53-week year | ✅ |
+| R5 | pattern with either remainderPolicy | identical | ✅ |
+| R6 | 4-4-5 on an exact-date 365-day year | 12 periods, last one 36 days | ✅ |
+| C1 | default `yearStartRule` | Monday rule for a pattern, exact date for month | ✅ |
+| C2 | explicit Monday rule with months | months anchored to the Monday: 6 Jul → 5 Aug | ✅ |
+| C3 | brief default | still 2020-07-01 | ✅ |
+| C4 | 4-4-5 from 2020-07-02 | first group is `2019-2020` with one period (12), then `2020-2021` from 6 Jul with 12 | ✅ |
+| C5 | unknown rule | `INVALID_ENUM` | ✅ |
 
 ---
 

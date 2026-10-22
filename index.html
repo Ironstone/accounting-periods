@@ -50,6 +50,15 @@
       <select name="periodLength">
         <option value="week">Week</option><option value="fortnight">Fortnight</option>
         <option value="month" selected>Month</option><option value="quarter">Quarter</option>
+        <option value="4-4-5">4-4-5 weeks (retail)</option><option value="4-5-4">4-5-4 weeks (retail)</option>
+        <option value="5-4-4">5-4-4 weeks (retail)</option><option value="13x4">13 × 4 weeks</option>
+      </select>
+    </label>
+    <label>Year starts on
+      <select name="yearStartRule">
+        <option value="" selected>Default (exact date; first Monday for the week patterns)</option>
+        <option value="exactDate">The exact date</option>
+        <option value="firstMondayOnOrAfter">First Monday on or after the date</option>
       </select>
     </label>
     <label>Leftover days (weeks and fortnights only)

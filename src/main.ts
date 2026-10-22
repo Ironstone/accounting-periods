@@ -2,7 +2,7 @@
 // No logic lives here; it only maps inputs to the typed request and shows the result.
 import { calculate } from './calculate';
 import { format } from './format';
-import type { DateFormat, PeriodLength, PeriodsRequest, RemainderPolicy } from './types';
+import type { DateFormat, PeriodLength, PeriodsRequest, RemainderPolicy, YearStartRule } from './types';
 
 const form = document.getElementById('form') as HTMLFormElement;
 const output = document.getElementById('output') as HTMLDivElement;
@@ -20,6 +20,8 @@ function readRequest(): { request: PeriodsRequest; kind: 'text' | 'html'; showDa
   };
   // A cleared date field means "use the default" (today), not an error.
   if (str('startDate')) request.startDate = str('startDate');
+  // An empty year-start choice means "default for this period length".
+  if (str('yearStartRule')) request.yearStartRule = str('yearStartRule') as YearStartRule;
   return {
     request,
     kind: str('kind') === 'text' ? 'text' : 'html',

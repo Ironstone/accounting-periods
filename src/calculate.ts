@@ -7,6 +7,8 @@ import {
   FIRST_YEAR_SCOPES,
   PERIOD_LENGTHS,
   REMAINDER_POLICIES,
+  YEAR_START_RULES,
+  defaultYearStartRule,
   todayIso,
   type MonthDay,
   type PeriodsRequest,
@@ -59,6 +61,12 @@ export function resolveConfig(request: PeriodsRequest = {}, now: Date = new Date
     err('firstYearScope', 'INVALID_ENUM', `firstYearScope must be one of ${FIRST_YEAR_SCOPES.join(', ')}, got "${firstYearScope}"`);
   }
 
+  // The default follows the period length: retail patterns want whole weeks.
+  const yearStartRule = request.yearStartRule ?? defaultYearStartRule(periodLength);
+  if (!YEAR_START_RULES.includes(yearStartRule)) {
+    err('yearStartRule', 'INVALID_ENUM', `yearStartRule must be one of ${YEAR_START_RULES.join(', ')}, got "${yearStartRule}"`);
+  }
+
   // bound
   const financialYears = request.financialYears ?? DEFAULTS.financialYears;
   if (!Number.isInteger(financialYears) || financialYears < 1) {
@@ -66,7 +74,7 @@ export function resolveConfig(request: PeriodsRequest = {}, now: Date = new Date
   }
 
   if (errors.length) return { errors };
-  return { config: { startDate, financialYearStart: fyStart, periodLength, remainderPolicy, firstYearScope, financialYears } };
+  return { config: { startDate, financialYearStart: fyStart, periodLength, remainderPolicy, firstYearScope, yearStartRule, financialYears } };
 }
 
 /** The calculation entry point. Never throws; errors come back in the response. */

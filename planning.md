@@ -27,6 +27,7 @@ display are separate functions with typed contracts.
 | R9 | `calculate(request) → response`: strongly typed in and out; response can carry errors | Brian 14:36 | ✅ |
 | R10 | `format(response, options) → string`: text table and HTML table | Brian 14:36 | ✅ |
 | R11 | Before adding behaviour, ask whether a new parameter is needed | Brian 14:36 | ✅ |
+| R12 | Retail calendars: 4-4-5, 4-5-4, 5-4-4 and 13×4 week patterns; the year starts on the first Monday on or after the financial year start | Brian, 22 Oct | ✅ |
 
 ---
 
@@ -38,7 +39,8 @@ display are separate functions with typed contracts.
 |---|---|---|---|---|
 | `startDate` | ISO `yyyy-mm-dd` | today | must parse to a real date | the brief's input |
 | `financialYearStart` | `{ month: 1–12, day: 1–31 }` | `{ month: 7, day: 1 }` | day must exist in month | calendar year, 1 April, 1 October… any 12-month year |
-| `periodLength` | `'week' \| 'fortnight' \| 'month' \| 'quarter'` | `'month'` | must be a member of the enum | Brian's first-pass list |
+| `periodLength` | `'week' \| 'fortnight' \| 'month' \| 'quarter' \| '4-4-5' \| '4-5-4' \| '5-4-4' \| '13x4'` | `'month'` | must be a member of the enum | Brian's first-pass list plus the retail patterns (22 Oct) |
+| `yearStartRule` | `'exactDate' \| 'firstMondayOnOrAfter'` | `exactDate`; `firstMondayOnOrAfter` when the length is a pattern | enum | retail years are whole weeks. Decisions A29 |
 | `remainderPolicy` | `'shortLastPeriod' \| 'extendLastPeriod'` | `'shortLastPeriod'` | enum | weeks/fortnights never divide 365/366 exactly. See decisions A10 |
 | `firstYearScope` | `'fromStartDate' \| 'wholeYear'` | `'fromStartDate'` | enum | a mid-year start can list the first year from the start date or from period 1. Added 15:05, see decisions A25 |
 | `financialYears` | integer ≥ 1 | `2` | integer, ≥ 1 | the response is a finite object, so the caller bounds the infinite stream |
@@ -118,8 +120,8 @@ flowchart LR
 |---|---|---|---|
 | Types + defaults | `src/types.ts` | request, response, options, `DEFAULTS`, `resolveConfig` | ✅ |
 | Date helpers | `src/dates.ts` | y/m/d integers, `Date.UTC` arithmetic, ISO parse/format | ✅ |
-| FY rule | `src/financialYear.ts` | FY containing a date for a given `financialYearStart`; label; days | ✅ |
-| Period scheme | `src/periods.ts` | period boundaries inside an FY for a `periodLength` + `remainderPolicy`; infinite generator from a start date honouring `firstYearScope` | ✅ |
+| FY rule | `src/financialYear.ts` | FY containing a date for a given `financialYearStart` and `yearStartRule`; nominal label; days (365/366, or 364/371 under the Monday rule) | ✅ |
+| Period scheme | `src/periods.ts` | period boundaries inside an FY for a `periodLength` (constant step or week pattern) + `remainderPolicy`; infinite generator from a start date honouring `firstYearScope` and `yearStartRule` | ✅ |
 | Grouping | `src/grouping.ts` | adjacent grouping of the stream into FY groups, lazy | ✅ |
 | Calculate | `src/calculate.ts` | `calculate(request): PeriodsResponse` | ✅ |
 | Format | `src/format.ts` | `format(response, options): string`; `formatText`, `formatHtml` | ✅ |
@@ -133,6 +135,7 @@ flowchart LR
 3. A period ends the day before the next start, **capped at `fy.end`**.
 4. If the last period is shorter than a full one and `remainderPolicy = extendLastPeriod`, merge it into the previous period.
 5. `periodsInYear` is whatever step 4 leaves. Months always give 12, quarters 4, weeks 52 or 53, fortnights 26 or 27.
+6. **Patterns** (added 22 Oct): `advance(i)` is the cumulative sum of the week pattern, the period count is the pattern length, and the last period always runs to the year end, so a 53-week year gives a 6-week final period. Step 4 does not apply.
 
 ---
 
@@ -169,5 +172,4 @@ flowchart LR
 ## 8. Out of scope (deliberately)
 
 * Time zones and locale-aware date formatting (dates are pure y/m/d; `dateFormat` offers four fixed styles).
-* 4-4-5 and 13×4-week retail calendars (would be new `periodLength` members).
 * Non-month-aligned FY ends like UK 5 April **are** supported by the algorithm (FY start is any day) with tests L6 and L7 for mid-month FY starts.

@@ -1,14 +1,15 @@
 import { parseArgs } from 'node:util';
 import { calculate } from './calculate';
 import { format } from './format';
-import { DATE_FORMATS, type DateFormat, type PeriodLength, type PeriodsRequest, type RemainderPolicy } from './types';
+import { DATE_FORMATS, type DateFormat, type PeriodLength, type PeriodsRequest, type RemainderPolicy, type YearStartRule } from './types';
 
 const HELP = `accounting-periods [startDate] [options]
 
   startDate            yyyy-mm-dd (default: today)
   --fy-start MM-DD     financial year start (default 07-01)
-  --period <len>       week | fortnight | month | quarter (default month)
-  --remainder <pol>    shortLastPeriod | extendLastPeriod (default shortLastPeriod)
+  --period <len>       week | fortnight | month | quarter | 4-4-5 | 4-5-4 | 5-4-4 | 13x4 (default month)
+  --remainder <pol>    shortLastPeriod | extendLastPeriod (default shortLastPeriod; weeks and fortnights only)
+  --year-start <rule>  exactDate | firstMondayOnOrAfter (default exactDate, or firstMondayOnOrAfter for the patterns)
   --whole-first-year   list the first year from period 1, not just from startDate
   --years <n>          financial years to show (default 2)
   --format <kind>      text | html (default text)
@@ -24,6 +25,7 @@ const { values, positionals } = parseArgs({
     'fy-start': { type: 'string' },
     period: { type: 'string' },
     remainder: { type: 'string' },
+    'year-start': { type: 'string' },
     years: { type: 'string' },
     'whole-first-year': { type: 'boolean' },
     format: { type: 'string' },
@@ -47,6 +49,7 @@ if (values['fy-start']) {
 }
 if (values.period) request.periodLength = values.period as PeriodLength;
 if (values.remainder) request.remainderPolicy = values.remainder as RemainderPolicy;
+if (values['year-start']) request.yearStartRule = values['year-start'] as YearStartRule;
 if (values.years) request.financialYears = Number(values.years);
 if (values['whole-first-year']) request.firstYearScope = 'wholeYear';
 

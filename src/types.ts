@@ -16,8 +16,28 @@ export interface MonthDay {
   day: number;   // 1..31, must exist in that month
 }
 
-export const PERIOD_LENGTHS = ['week', 'fortnight', 'month', 'quarter'] as const;
+/**
+ * Period lengths. The last four are retail calendars: each quarter is split into
+ * three periods of the given number of WEEKS (4-4-5 = 13 weeks a quarter, 12 periods a
+ * year), or thirteen 4-week periods. They are meant to run with yearStartRule
+ * 'firstMondayOnOrAfter' so every year is exactly 52 or 53 whole weeks.
+ */
+export const PERIOD_LENGTHS = ['week', 'fortnight', 'month', 'quarter', '4-4-5', '4-5-4', '5-4-4', '13x4'] as const;
 export type PeriodLength = (typeof PERIOD_LENGTHS)[number];
+
+export const PATTERN_LENGTHS: readonly PeriodLength[] = ['4-4-5', '4-5-4', '5-4-4', '13x4'];
+export function isPatternLength(length: PeriodLength): boolean {
+  return PATTERN_LENGTHS.includes(length);
+}
+
+/**
+ * Where a financial year actually begins relative to the nominal financialYearStart.
+ * - exactDate: on that day and month (1 July is 1 July).
+ * - firstMondayOnOrAfter: on the first Monday on or after it, so the year is 52 or 53 whole weeks.
+ * Default is exactDate, except for the pattern period lengths, which default to firstMondayOnOrAfter.
+ */
+export const YEAR_START_RULES = ['exactDate', 'firstMondayOnOrAfter'] as const;
+export type YearStartRule = (typeof YEAR_START_RULES)[number];
 
 /**
  * Weeks and fortnights never divide a 365/366-day year exactly.
@@ -42,6 +62,7 @@ export interface PeriodsRequest {
   periodLength?: PeriodLength;
   remainderPolicy?: RemainderPolicy;
   firstYearScope?: FirstYearScope;
+  yearStartRule?: YearStartRule;
   /** How many financial years to return. The underlying stream is infinite. */
   financialYears?: number;
 }
@@ -53,6 +74,7 @@ export interface ResolvedConfig {
   periodLength: PeriodLength;
   remainderPolicy: RemainderPolicy;
   firstYearScope: FirstYearScope;
+  yearStartRule: YearStartRule;
   financialYears: number;
 }
 
@@ -73,7 +95,7 @@ export interface FinancialYearGroup {
   days: number;
   /** How many periods the whole year has (12, 4, 52/53, 26/27). */
   periodsInYear: number;
-  /** Only the periods from the request's startDate onward. */
+  /** From the request's startDate onward, or the whole first year when firstYearScope = wholeYear. */
   periods: Period[];
 }
 
@@ -116,13 +138,18 @@ export function todayIso(now: Date = new Date()): IsoDate {
   return now.toISOString().slice(0, 10);
 }
 
-export const DEFAULTS: Omit<ResolvedConfig, 'startDate'> = {
+export const DEFAULTS: Omit<ResolvedConfig, 'startDate' | 'yearStartRule'> = {
   financialYearStart: { month: 7, day: 1 },
   periodLength: 'month',
   remainderPolicy: 'shortLastPeriod',
   firstYearScope: 'fromStartDate',
   financialYears: 2,
 };
+
+/** yearStartRule's default follows the period length: whole weeks for the retail patterns. */
+export function defaultYearStartRule(periodLength: PeriodLength): YearStartRule {
+  return isPatternLength(periodLength) ? 'firstMondayOnOrAfter' : 'exactDate';
+}
 
 export const FORMAT_DEFAULTS: ResolvedFormatOptions = {
   kind: 'text',
